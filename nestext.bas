@@ -77,10 +77,14 @@ sub keyevent()
 		kqueue += k
 		skip = 1
 	end if
-	if k = !"\27" or k = !"\255k" or lcase(k) = "q" then esc = 1
+	select case k
+	'' quit
+	case !"\27", !"\255k", "q", "Q"
+		esc = 1
+	end select
 end sub
 
-function readqkey() as string
+function peekkey() as string
 	if left(kqueue, 1) = !"\255" then
 		function = left(kqueue, 2)
 	else
@@ -88,7 +92,7 @@ function readqkey() as string
 	end if
 end function	
 
-function getqkey() as string
+function popkey() as string
 	if left(kqueue, 1) = !"\255" then
 		function = left(kqueue, 2)
 		kqueue = mid(kqueue, 3)
@@ -101,7 +105,7 @@ end function
 sub putchar(x as integer, y as integer, c as ubyte)
 	if x < 0 or y < 0 or x >= SWID or y >= SHEI then return
 
-	if skip = 0 then
+	if focus = 0 and skip = 0 then
 		'locate 1+y, 1+x
 		'print "_";
 		sleep 50
@@ -206,7 +210,7 @@ dim chs(0 to 32000) as ubyte
 dim vs(0 to 32000) as ubyte
 
 dim as string vhead, blank
-dim as integer vcount, vn = 0
+dim as integer vcount, vn = 0, dv
 dim as integer sep1, sep2, sep3
 
 open "kjv.txt" for input as #1
@@ -240,17 +244,68 @@ close #1
 vcount = vn
 
 vn = 0
-do while vn >= 0 and vn < vcount
+do' while vn >= 0 and vn < vcount
 	color 15, 0
 	cls
 
 	nicebox(0, 0, SWID, 3)
 	color 15, 1
-	locate 2, 2: print bks(vn) & " " & chs(vn) & ":" & vs(vn)
+	locate 2, 2: print focus & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn)
 
 	skip = 0
 	telebox(VWID, verses(vn))
 	if esc then exit do
-	sleep 1000
-	vn += 1
+
+
+	dv = 0
+	select case popkey()
+	'' Left
+	case !"\255K"
+		focus = (focus + 3) mod 4
+	'' Right
+	case !"\255M"
+		focus = (focus + 1) mod 4
+	'' Up
+	case !"\255H"
+		select case focus
+		case 0
+			dv = -1
+		case 1:
+			while vn > 0 andalso bks(vn) = bks(vn-1): vn -= 1: wend
+			vn = (vn + vcount - 1) mod vcount
+			while vn > 0 andalso bks(vn) = bks(vn-1): vn -= 1: wend
+		case 2:
+			while vn > 0 andalso chs(vn) = chs(vn-1): vn -= 1: wend
+			vn = (vn + vcount - 1) mod vcount
+			while vn > 0 andalso chs(vn) = chs(vn-1): vn -= 1: wend
+		case 3:
+			vn = (vn + vcount - 1) mod vcount
+		end select
+	'' Down
+	case !"\255P"
+		select case focus
+		case 0
+			dv = -1
+		case 1:
+			while vn < vcount andalso bks(vn) = bks(vn+1): vn += 1: wend
+			vn = (vn + 1) mod vcount
+		case 2:
+			while vn < vcount andalso chs(vn) = chs(vn+1): vn += 1: wend
+			vn = (vn + 1) mod vcount
+		case 3:
+			vn = (vn + 1) mod vcount
+		end select
+	case else
+		if focus <> 0 then sleep
+	end select
+
+	if dv then
+		vn = (vn + vcount + dv) mod vcount
+	elseif focus = 0 then
+		sleep 1000
+		vn = (vn + 1) mod vcount
+	else
+		'sleep
+	end if
+	keyevent()
 loop
