@@ -1,5 +1,10 @@
-dim shared skip as integer = 0
-const SWID=256\8, SHEI=240\8
+'const SWID=256\8, SHEI=240\8
+const SWID=320\8, SHEI=240\8
+const VWID=SWID-6
+
+dim shared as integer skip = 0, esc = 0
+dim shared as integer focus
+dim shared as string kqueue
 
 function wrap(s as const string, wid as integer) as string
 	dim ret as string = ""
@@ -66,15 +71,50 @@ function wrap(s as const string, wid as integer) as string
 	return ret
 end function
 
+sub keyevent()
+	dim as string k = inkey
+	if k <> "" then
+		kqueue += k
+		skip = 1
+	end if
+	if k = !"\27" or k = !"\255k" or lcase(k) = "q" then esc = 1
+end sub
+
+function readqkey() as string
+	if left(kqueue, 1) = !"\255" then
+		function = left(kqueue, 2)
+	else
+		function = left(kqueue, 1)
+	end if
+end function	
+
+function getqkey() as string
+	if left(kqueue, 1) = !"\255" then
+		function = left(kqueue, 2)
+		kqueue = mid(kqueue, 3)
+	else
+		function = left(kqueue, 1)
+		kqueue = mid(kqueue, 2)
+	end if
+end function	
+
 sub putchar(x as integer, y as integer, c as ubyte)
 	if x < 0 or y < 0 or x >= SWID or y >= SHEI then return
 
 	if skip = 0 then
-		locate 1+y, 1+x
-		print "_";
+		'locate 1+y, 1+x
+		'print "_";
 		sleep 50
-		if len(inkey) then skip = 1
+
 	end if
+
+	keyevent()
+	kqueue += inkey
+	select case left(kqueue, 1)
+	
+	case !"\27", !"\255k": esc = 1
+	case is > "": skip = 1
+	end select
 
 	locate 1+y, 1+x
 	print chr(c);
@@ -84,6 +124,7 @@ sub teletype(x as integer, y as integer, s as string)
 	dim as integer x2 = x, y2 = y
 	dim as ubyte c
 	for i as integer = 0 to len(s)-1
+		if esc then exit for
 		c = s[i]
 		if c = 10 then
 			'putchar(x2, y2, 32)
@@ -106,10 +147,16 @@ function countlines(ws as string) as integer
 end function
 
 sub nicebox(x as integer, y as integer, w as integer, h as integer)
-	dim as integer x2 = x + w - 1, y2 = y + h - 1
-	line (x*8, y*8)-(x2*8+7, y2*8+7), 1, bf
-	line (x*8, y*8)-(x2*8+7, y2*8+7), 15, b
-	line (x*8+1, y*8+1)-(x2*8+6, y2*8+6), 7, b
+	var x2 = x + w - 1, y2 = y + h - 1
+
+	var sx1 = x*8+1
+	var sy1 = y*8+1
+	var sx2 = x2*8+6
+	var sy2 = y2*8+6
+
+	line (sx1, sy1)-(sx2, sy2), 1, bf
+	line (sx1, sy1)-(sx2, sy2), 15, b
+	line (sx1+1, sy1+1)-(sx2-1, sy2-1), 7, b
 end sub
 
 sub telebox(wid as integer, s as string)
@@ -123,21 +170,87 @@ end sub
 
 
 screenres SWID*8, SHEI*8
-'paint (1,1), 12
-var wid = SWID-6
 
-'var verse = !"  There  is  therefore  now  no  condemnation  for  those  who  are  in  Christ  Jesus.         "
 
-dim verse as string
-open "es89.txt" for input as #1
-line input #1, verse
+sub testmain()
+	'paint (1,1), 12
+
+
+	var wid = SWID-6
+
+	'var verse = !"  There  is  therefore  now  no  condemnation  for  those  who  are  in  Christ  Jesus.         "
+
+	dim verse as string
+	open "es89.txt" for input as #1
+	line input #1, verse
+	close #1
+
+	'print tab((SWID-wid)\2); string(wid, "#")
+
+	nicebox(0, 0, SWID, 3)
+	color 15, 1
+	locate 2, 2: print "Esther 8:9"
+
+	telebox(wid, verse)
+
+	'print
+	'print tab((SWID-wid)\2); string(wid, "#")
+
+	sleep
+end sub
+'testmain()
+
+dim verses(0 to 32000) as string
+dim bks(0 to 32000) as string*4
+dim chs(0 to 32000) as ubyte
+dim vs(0 to 32000) as ubyte
+
+dim as string vhead, blank
+dim as integer vcount, vn = 0
+dim as integer sep1, sep2, sep3
+
+open "kjv.txt" for input as #1
+	do until eof(1)
+		line input #1, vhead
+		line input #1, verses(vn)
+		line input #1, blank
+
+		assert(left(vhead, 3) = "$$ ")
+		vhead = mid(vhead, 4)
+
+		sep1 = instr(vhead, " ")
+		sep2 = instr(sep1+1, vhead, ":")
+		assert(sep1 andalso sep2)
+		bks(vn) = left(vhead, sep1 - 1)
+		chs(vn) = valint(mid(vhead, sep1+1, sep2-(sep1+1)))
+		vs(vn) = valint(mid(vhead, sep2+1))
+
+		'print using "&&&:&"; vn; bks(vn); chs(vn); vs(vn);
+		'print ,
+
+		if not (vn = 0 orelse _
+			bks(vn) = bks(vn-1) and ((chs(vn) = chs(vn-1) and vs(vn) = vs(vn-1)+1) or (chs(vn) = chs(vn-1)+1 and vs(vn) = 1)) orelse _
+			bks(vn) <> bks(vn-1) and chs(vn) = 1 and vs(vn) = 1) _
+			then print vn, vhead: sleep
+
+		vn += 1
+	loop
 close #1
 
-'print tab((SWID-wid)\2); string(wid, "#")
+vcount = vn
 
-telebox(wid, verse)
+vn = 0
+do while vn >= 0 and vn < vcount
+	color 15, 0
+	cls
 
-'print
-'print tab((SWID-wid)\2); string(wid, "#")
+	nicebox(0, 0, SWID, 3)
+	color 15, 1
+	locate 2, 2: print bks(vn) & " " & chs(vn) & ":" & vs(vn)
 
-sleep
+	skip = 0
+	telebox(VWID, verses(vn))
+	if esc then exit do
+	sleep 1000
+	vn += 1
+loop
