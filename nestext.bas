@@ -153,10 +153,10 @@ end function
 sub nicebox(x as integer, y as integer, w as integer, h as integer)
 	var x2 = x + w - 1, y2 = y + h - 1
 
-	var sx1 = x*8+1
-	var sy1 = y*8+1
-	var sx2 = x2*8+6
-	var sy2 = y2*8+6
+	var sx1 = x*8+0
+	var sy1 = y*8+0
+	var sx2 = x2*8+7
+	var sy2 = y2*8+7
 
 	line (sx1, sy1)-(sx2, sy2), 1, bf
 	line (sx1, sy1)-(sx2, sy2), 15, b
