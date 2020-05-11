@@ -250,7 +250,20 @@ do' while vn >= 0 and vn < vcount
 
 	nicebox(0, 0, SWID, 3)
 	color 15, 1
-	locate 2, 2: print mid("TBCV", 1+focus, 1) & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn)
+	'locate 2, 2: print mid("TBCV", 1+focus, 1) & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn)
+
+	locate 2, 2: print bks(vn) & " " & chs(vn) & ":" & vs(vn)
+
+	dim as integer indent = -1
+	select case focus
+	case 1: indent = 0
+	case 2: indent = len(bks(vn) & " " & chs(vn)) - 1
+	case 3: indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) - 1
+	end select
+	if indent >= 0 then
+		locate 1, 2 + indent: print !"\x1e";
+		locate 3, 2 + indent: print !"\x1f";
+	end if
 
 	skip = 0
 	telebox(VWID, verses(vn))
