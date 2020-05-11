@@ -302,7 +302,7 @@ do' while vn >= 0 and vn < vcount
 	if dv then
 		vn = (vn + vcount + dv) mod vcount
 	elseif focus = 0 then
-		sleep 1000
+		sleep 2000
 		vn = (vn + 1) mod vcount
 	else
 		'sleep
