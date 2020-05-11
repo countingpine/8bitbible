@@ -262,9 +262,11 @@ do' while vn >= 0 and vn < vcount
 	'' Left
 	case !"\255K"
 		focus = (focus + 3) mod 4
+		if focus = 0 then dv = 1
 	'' Right
 	case !"\255M"
 		focus = (focus + 1) mod 4
+		if focus = 0 then dv = 1
 	'' Up
 	case !"\255H"
 		select case focus
