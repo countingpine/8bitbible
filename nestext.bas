@@ -250,7 +250,7 @@ do' while vn >= 0 and vn < vcount
 
 	nicebox(0, 0, SWID, 3)
 	color 15, 1
-	locate 2, 2: print focus & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn)
+	locate 2, 2: print mid("TBCV", 1+focus, 1) & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn)
 
 	skip = 0
 	telebox(VWID, verses(vn))
