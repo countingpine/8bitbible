@@ -285,7 +285,7 @@ do' while vn >= 0 and vn < vcount
 	case !"\255P"
 		select case focus
 		case 0
-			dv = -1
+			dv = 1
 		case 1:
 			while vn < vcount andalso bks(vn) = bks(vn+1): vn += 1: wend
 			vn = (vn + 1) mod vcount
