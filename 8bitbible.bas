@@ -79,7 +79,7 @@ sub keyevent()
 	end if
 	select case k
 	'' quit
-	case !"\27", !"\255k", "q", "Q"
+	case !"\27", !"\255k", "q", "Q", !"\x11" '' Ctrl-Q
 		esc = 1
 	end select
 end sub
