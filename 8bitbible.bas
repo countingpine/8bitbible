@@ -1,3 +1,5 @@
+#include "gifwriter.bi"
+
 'const SWID=256\8, SHEI=240\8
 const SWID=320\8, SHEI=240\8
 const VWID=SWID-6
@@ -5,6 +7,8 @@ const VWID=SWID-6
 dim shared as integer skip = 0, esc = 0
 dim shared as integer focus
 dim shared as string kqueue
+
+dim shared as GifWriter ptr g
 
 function wrap(s as const string, wid as integer) as string
 	dim ret as string = ""
@@ -139,6 +143,8 @@ sub teletype(x as integer, y as integer, s as string)
 			putchar(x2, y2, c)
 			x2 += 1
 		end if
+		if i = len(s)-1 then g->setNextFrameDuration(100)
+		g->saveScreen()
 	next i
 end sub
 
@@ -175,6 +181,8 @@ end sub
 
 screenres SWID*8, SHEI*8
 
+g = new GifWriter("out.gif")
+g->setDefaultFrameDuration(5)
 
 sub testmain()
 	'paint (1,1), 12
@@ -324,3 +332,5 @@ do' while vn >= 0 and vn < vcount
 	end if
 	keyevent()
 loop
+
+delete g
