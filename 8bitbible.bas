@@ -213,7 +213,7 @@ dim as string vhead, blank
 dim as integer vcount, vn = 0, dv
 dim as integer sep1, sep2, sep3
 
-open "kjv.txt" for input as #1
+open "web.txt" for input as #1
 	do until eof(1)
 		line input #1, vhead
 		line input #1, verses(vn)
