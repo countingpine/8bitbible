@@ -158,9 +158,16 @@ sub nicebox(x as integer, y as integer, w as integer, h as integer)
 	var sx2 = x2*8+7
 	var sy2 = y2*8+7
 
+	'' blue box, white border, grey inner border
 	line (sx1, sy1)-(sx2, sy2), 1, bf
 	line (sx1, sy1)-(sx2, sy2), 15, b
 	line (sx1+1, sy1+1)-(sx2-1, sy2-1), 7, b
+
+	'' rounded corners
+	pset (sx1, sy1), 8
+	pset (sx2, sy1), 8
+	pset (sx1, sy2), 8
+	pset (sx2, sy2), 8
 end sub
 
 sub telebox(wid as integer, s as string)
