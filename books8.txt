@@ -6,7 +6,6 @@ Deutrnmy
 Joshua
 Judges
 Ruth
-Esther
 1Samuel
 2Samuel
 1Kings
@@ -15,6 +14,8 @@ Esther
 2Chrncls
 Ezra
 Nehemiah
+Esther
+Job
 Psalms
 Proverbs
 Ecclstes
