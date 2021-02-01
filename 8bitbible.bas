@@ -205,7 +205,7 @@ end sub
 'testmain()
 
 dim verses(0 to 32000) as string
-dim bks(0 to 32000) as string*4
+dim bks(0 to 32000) as string*20
 dim chs(0 to 32000) as ubyte
 dim vs(0 to 32000) as ubyte
 
@@ -219,10 +219,16 @@ open "kjv.txt" for input as #1
 		line input #1, verses(vn)
 		line input #1, blank
 
+		assert(blank = "" and verses(vn) <> "")
+
+		'' vhead: "$$ 1 Thessalonians 3:16"
+                ''         xxx^          sep1^ ^sep2
+
 		assert(left(vhead, 3) = "$$ ")
 		vhead = mid(vhead, 4)
 
-		sep1 = instr(vhead, " ")
+		'sep1 = instr(vhead, " ")
+		sep1 = instr(2, vhead, any "123456789") - 1
 		sep2 = instr(sep1+1, vhead, ":")
 		assert(sep1 andalso sep2)
 		bks(vn) = left(vhead, sep1 - 1)
