@@ -226,7 +226,10 @@ open "web.txt" for input as #1
 		line input #1, verses(vn)
 		line input #1, blank
 
-		assert(blank = "" and verses(vn) <> "")
+		if blank <> "" then print using "&: '&' not blank!"; vhead; blank: sleep
+		assert(blank = "")
+		if verses(vn) = "" then print vhead & " blank!": sleep
+		assert(verses(vn) <> "")
 
 		'' vhead: "$$ 1 Thessalonians 3:16"
                 ''         xxx^          sep1^ ^sep2
