@@ -16,6 +16,7 @@ end enum
 sub locprint(y as integer, x as integer, s as const string)
 	locate y, x
 	print s;
+	'draw string ((x-1)*8, (y-1)*8), s
 end sub
 
 function wrap(s as const string, wid as integer) as string
