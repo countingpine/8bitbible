@@ -1,3 +1,7 @@
+#ifdef USE_GIF '' define USE_GIF to output screen frames to GIF (compile with gifwriter.bas)
+#include "gifwriter.bi"
+#endif
+
 'const SWID=256\8, SHEI=240\8
 const SWID=320\8, SHEI=240\8
 const VWID=SWID-6
@@ -5,6 +9,10 @@ const VWID=SWID-6
 dim shared as integer skip = 0, esc = 0
 dim shared as integer focus
 dim shared as string kqueue
+
+#ifdef USE_GIF
+dim shared as GifWriter ptr g
+#endif
 
 enum
   FC_PLAY = 0
@@ -150,6 +158,10 @@ sub teletype(x as integer, y as integer, s as string)
 			putchar(x2, y2, c)
 			x2 += 1
 		end if
+#ifdef USE_GIF
+		if i = len(s)-1 then g->setNextFrameDuration(100)
+		g->saveScreen()
+#endif
 	next i
 end sub
 
@@ -195,6 +207,10 @@ end sub
 
 screenres SWID*8, SHEI*8
 
+#ifdef USE_GIF
+g = new GifWriter("out.gif")
+g->setDefaultFrameDuration(5)
+#endif
 
 sub testmain()
 	'paint (1,1), 12
