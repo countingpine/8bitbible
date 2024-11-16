@@ -6,6 +6,13 @@ dim shared as integer skip = 0, esc = 0
 dim shared as integer focus
 dim shared as string kqueue
 
+enum
+  FC_PLAY = 0
+  FC_BOOK = 1
+  FC_CHAP = 2
+  FC_VERS = 3
+end enum
+
 function wrap(s as const string, wid as integer) as string
 	dim ret as string = ""
 	dim lin as string = ""
@@ -105,7 +112,7 @@ end function
 sub putchar(x as integer, y as integer, c as ubyte)
 	if x < 0 or y < 0 or x >= SWID or y >= SHEI then return
 
-	if focus = 0 and skip = 0 then
+	if focus = FC_PLAY and skip = 0 then
 		'locate 1+y, 1+x
 		'print "_";
 		sleep 50
@@ -275,6 +282,9 @@ do' while vn >= 0 and vn < vcount
 	case 1: indent = 0
 	case 2: indent = len(bks(vn) & " " & chs(vn)) - 1
 	case 3: indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) - 1
+	case FC_BOOK: indent = 0
+	case FC_CHAP: indent = len(bks(vn) & " " & chs(vn)) - 1
+	case FC_VERS: indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) - 1
 	end select
 	if indent >= 0 then
 		locate 1, 2 + indent: print !"\x1e";
@@ -315,24 +325,24 @@ do' while vn >= 0 and vn < vcount
 	'' Down
 	case !"\255P"
 		select case focus
-		case 0
+		case FC_PLAY
 			dv = 1
-		case 1:
+		case FC_BOOK:
 			while vn < vcount andalso bks(vn) = bks(vn+1): vn += 1: wend
 			vn = (vn + 1) mod vcount
-		case 2:
+		case FC_CHAP:
 			while vn < vcount andalso chs(vn) = chs(vn+1): vn += 1: wend
 			vn = (vn + 1) mod vcount
-		case 3:
+		case FC_VERS:
 			vn = (vn + 1) mod vcount
 		end select
 	case else
-		if focus <> 0 then sleep
+		if focus <> FC_PLAY then sleep
 	end select
 
 	if dv then
 		vn = (vn + vcount + dv) mod vcount
-	elseif focus = 0 then
+	elseif focus = FC_PLAY then
 		sleep 2000
 		vn = (vn + 1) mod vcount
 	else
