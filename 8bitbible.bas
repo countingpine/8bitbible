@@ -13,6 +13,11 @@ enum
   FC_VERS = 3
 end enum
 
+sub locprint(y as integer, x as integer, s as const string)
+	locate y, x
+	print s;
+end sub
+
 function wrap(s as const string, wid as integer) as string
 	dim ret as string = ""
 	dim lin as string = ""
@@ -113,8 +118,7 @@ sub putchar(x as integer, y as integer, c as ubyte)
 	if x < 0 or y < 0 or x >= SWID or y >= SHEI then return
 
 	if focus = FC_PLAY and skip = 0 then
-		'locate 1+y, 1+x
-		'print "_";
+		'locprint(1+y, 1+x, "_")
 		sleep 50
 
 	end if
@@ -127,8 +131,7 @@ sub putchar(x as integer, y as integer, c as ubyte)
 	case is > "": skip = 1
 	end select
 
-	locate 1+y, 1+x
-	print chr(c);
+	locprint(1+y, 1+x, chr(c))
 end sub
 
 sub teletype(x as integer, y as integer, s as string)
@@ -207,7 +210,7 @@ sub testmain()
 
 	nicebox(0, 0, SWID, 3)
 	color 15, 1
-	locate 2, 2: print "Esther 8:9"
+	locprint(2, 2, "Esther 8:9")
 
 	telebox(wid, verse)
 
@@ -273,9 +276,9 @@ do' while vn >= 0 and vn < vcount
 
 	nicebox(0, 0, SWID, 3)
 	color 15, 1
-	'locate 2, 2: print mid("TBCV", 1+focus, 1) & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn)
+	'locprint(2, 2, mid("TBCV", 1+focus, 1) & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn))
 
-	locate 2, 2: print bks(vn) & " " & chs(vn) & ":" & vs(vn)
+	locprint(2, 2, bks(vn) & " " & chs(vn) & ":" & vs(vn))
 
 	dim as integer indent = -1
 	select case focus
@@ -287,8 +290,8 @@ do' while vn >= 0 and vn < vcount
 	case FC_VERS: indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) - 1
 	end select
 	if indent >= 0 then
-		locate 1, 2 + indent: print !"\x1e";
-		locate 3, 2 + indent: print !"\x1f";
+		locprint(1, 2 + indent, !"\x1e")
+		locprint(3, 2 + indent, !"\x1f")
 	end if
 
 	skip = 0
