@@ -280,20 +280,22 @@ do' while vn >= 0 and vn < vcount
 	color 15, 1
 	'locprint(2, 2, mid("TBCV", 1+focus, 1) & " " & bks(vn) & " " & chs(vn) & ":" & vs(vn))
 
-	locprint(2, 2, bks(vn) & " " & chs(vn) & ":" & vs(vn))
+	locprint(2, 4, bks(vn) & " " & chs(vn) & ":" & vs(vn))
 
 	dim as integer indent = -1
 	select case focus
-	case 1: indent = 0
-	case 2: indent = len(bks(vn) & " " & chs(vn)) - 1
-	case 3: indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) - 1
+	case FC_PLAY: indent = -1
 	case FC_BOOK: indent = 0
 	case FC_CHAP: indent = len(bks(vn) & " " & chs(vn)) - 1
 	case FC_VERS: indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) - 1
 	end select
-	if indent >= 0 then
-		locprint(1, 2 + indent, !"\x1e")
-		locprint(3, 2 + indent, !"\x1f")
+	if focus = FC_PLAY then
+		'indent = len(bks(vn) & " " & chs(vn) & ":" & vs(vn)) + 1
+		'locprint(2, 4 + indent, !"\x10") '' Right 'play' arrow
+		locprint(2, 2, !"\x10")
+	else
+		locprint(1, 4 + indent, !"\x1e") '' Up arrow
+		locprint(3, 4 + indent, !"\x1f") '' Down arrow
 	end if
 
 	skip = 0
