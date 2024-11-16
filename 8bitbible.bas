@@ -183,10 +183,12 @@ end sub
 sub telebox(wid as integer, s as string)
 	dim as string ws = wrap(s, wid)
 	dim as integer hei = countlines(ws)
+	dim as integer y = (SHEI-hei)\2
+	dim as integer x = (SWID-wid)\2
 
-	nicebox (SWID-wid)\2-1, (SHEI-hei)\2-1, wid+2, hei+2
+	nicebox x-1, y-1, wid+2, hei+2
 	color 15, 1
-	teletype((SWID-wid)\2, (SHEI-hei)\2, ws)
+	teletype(x, y, ws)
 end sub
 
 
